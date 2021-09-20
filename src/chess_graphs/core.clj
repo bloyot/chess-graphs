@@ -29,10 +29,9 @@
 (defn chess-map
   "Create the a map with the pressure and control value for each game in
   the given pgn file."
-  [pgn-file]
+  [board]
   ;; todo load from games
-  (let [board (pgn/board->map (new Board))
-        occ-squares (board->square-vec board)
+  (let [occ-squares (board->square-vec board)
         white-squares (filter #(= :white (:side %)) occ-squares)
         black-squares (filter #(= :black (:side %)) occ-squares)
         white-threats (mapcat #(threats/square->threats board %) white-squares)
@@ -46,5 +45,22 @@
         (let [{:keys [rank file side]} (first squares)]
           (recur (rest squares)
                  (update-in result [file rank side] #(if % (inc %) 1))))
+        result))))
+
+(defn analyze-game
+  "given a particular game, create a the chess map for each half move
+  state."
+  [game]
+  (let [curr-state (new Board)
+        move-list (vec (.getHalfMoves game))]
+    ;; loop through each move, applying it to the board and storing it in
+    ;; the result vector
+    (loop [moves move-list
+           result []]
+      (if (seq moves)
+        (do
+          (.doMove curr-state (first moves))
+          (let [curr-chess-map (chess-map (pgn/board->map curr-state))]
+            (recur (rest moves) (conj result curr-chess-map))))
         result))))
 
