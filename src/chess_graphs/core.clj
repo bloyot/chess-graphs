@@ -1,22 +1,7 @@
-(ns bloyot.chess-graphs.core
-  (:require [bloyot.chess-graphs.pgn :as pgn]
-            [bloyot.chess-graphs.threats :as threats])
+(ns chess-graphs.core
+  (:require [chess-graphs.pgn :as pgn]
+            [chess-graphs.threats :as threats])
   (:import (com.github.bhlangonijr.chesslib Board)))
-
-(def ranks (vec (range 1 9)))
-(def files ["A" "B" "C" "D" "E" "F" "G" "H"])
-
-(defn get-square
-  "Given the board and a movement, return the rank and file at that
-  square, plus the piece there, if applicable. Return nil if off the
-  board. "
-  [board starting-file starting-rank mvmt]
-  (let [file (+ (first mvmt) (.indexOf files starting-file))
-        rank (+ (second mvmt) starting-rank)]
-    (when (and (<= 1 rank 8) (<= 0 file 7))
-      (merge {:rank rank
-              :file (nth files file)}
-             (get-in board [(nth files file) rank])))))
 
 (defn board->square-vec
   "given the board map, return a vector of squares, where each square has the
@@ -47,6 +32,8 @@
                  (update-in result [file rank side] #(if % (inc %) 1))))
         result))))
 
+;; example:
+;; (analyze-game (first (pgn/load-games! "resources/sample_pgn.pgn")))
 (defn analyze-game
   "given a particular game, create a the chess map for each half move
   state."

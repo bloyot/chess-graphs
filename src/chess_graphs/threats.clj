@@ -1,5 +1,18 @@
-(ns bloyot.chess-graphs.threats
-  (:require [bloyot.chess-graphs.core :as core]))
+(ns chess-graphs.threats
+  (:require [chess-graphs.core :as core]
+            [chess-graphs.pgn :as pgn]))
+
+(defn get-square
+  "Given the board and a movement, return the rank and file at that
+  square, plus the piece there, if applicable. Return nil if off the
+  board. "
+  [board starting-file starting-rank mvmt]
+  (let [file (+ (first mvmt) (.indexOf pgn/files starting-file))
+        rank (+ (second mvmt) starting-rank)]
+    (when (and (<= 1 rank 8) (<= 0 file 7))
+      (merge {:rank rank
+              :file (nth pgn/files file)}
+             (get-in board [(nth pgn/files file) rank])))))
 
 (defn threatened-squares
   "Return the threated squares based on the movement pattern and the
@@ -9,7 +22,7 @@
          file starting-file
          rank starting-rank
          result []]
-    (let [square (core/get-square board file rank mvmt)
+    (let [square (get-square board file rank mvmt)
           updated-result (if square (conj result square) result)]
       ;; if there's more squares to check, and the square we just considered
       ;; does not have a piece in it (i.e blocks), recur

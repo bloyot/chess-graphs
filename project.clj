@@ -6,4 +6,4 @@
   :repositories [["jitpack.io" "https://jitpack.io"]]
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [com.github.bhlangonijr/chesslib "1.3.2"]]
-  :repl-options {:init-ns bloyot.chess-graphs.core})
+  :repl-options {:init-ns chess-graphs.core})

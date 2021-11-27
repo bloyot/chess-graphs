@@ -1,10 +1,11 @@
-(ns bloyot.chess-graphs.pgn
-  (:require [bloyot.chess-graphs.core :as core]
-            [clojure.string :as str])
+(ns chess-graphs.pgn
+  (:require [clojure.string :as str])
   (:import (com.github.bhlangonijr.chesslib.pgn PgnHolder)
            (com.github.bhlangonijr.chesslib Board Square Piece)))
 
 ;; handle everything related to loading and processing pgn files here
+(def ranks (vec (range 1 9)))
+(def files ["A" "B" "C" "D" "E" "F" "G" "H"])
 
 (defn load-games!
   "loads the games from the pgn at the full file path given. Returns a
@@ -19,8 +20,8 @@
   by rank and file"
   [board]
   (let [all-squares
-        (for [rank core/ranks
-              file core/files]
+        (for [rank ranks
+              file files]
           {:rank rank
            :file file
            :piece (.getPiece board (Square/fromValue (str file rank)))})
